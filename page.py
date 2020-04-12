@@ -1,7 +1,22 @@
 import justpy as jp
+import random
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import Pipeline
+import pickle
+
+with open('spam_model.pkl', 'rb') as f:
+    model = pickle.load(f)
+
+test_text = "Does this work?"
 
 
 def page():
+
+    def predict(self, msg):
+        self.text = test_text
+
     wp = jp.WebPage()
     emojis = jp.A(
         href="https://afeld.github.io/emoji-css/emoji.css", classes="invisible", html_tag="link", rel='stylesheet', a=wp)
@@ -30,7 +45,9 @@ def page():
     text_in = jp.Div(classes='w-full border-2 h-32', html_tag='textarea',
                      placeholder='Please type here', a=cont_left)
     button = jp.Button(classes='my-4 bg-transparent hover:bg-gray-900 text-gray-900 hover:text-white rounded shadow hover:shadow-lg py-2 px-4 border border-gray-900 hover:border-transparent',
-                       a=cont_left, text='See Your Results')
+                       a=cont_left, click=predict, text='See Your Results')
+    button.on('click', predict)
+    test_spot = jp.P(classes='uppercase', a=cont_left)
     cont_right = jp.Div(
         classes='w-full lg:w-1/2 lg:py-6 text-center', a=cont_main)
     mailbox = jp.I(
@@ -44,6 +61,13 @@ def page():
     science = jp.I(classes='em em-test_tube', a=footer_text_cont)
 
     return wp
+
+
+"""@app.route('/predict', methods=['GET', 'POST'])
+def predict():
+    data = request.json
+    prediction = model.predict_proba([data['user_input']])
+    return jsonify({'probability': prediction[0][1]})"""
 
 
 jp.justpy(page)
