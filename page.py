@@ -9,17 +9,16 @@ import pickle
 with open('spam_model.pkl', 'rb') as f:
     model = pickle.load(f)
 
-test_text = "Does this work?"
+template = "THHIIIE"
 
 
-def page():
+async def predict(self, msg):
+    self.div.text = self.value
 
-    def predict(self, msg):
-        self.text = test_text
 
+async def page():
     wp = jp.WebPage()
-    emojis = jp.A(
-        href="https://afeld.github.io/emoji-css/emoji.css", classes="invisible", html_tag="link", rel='stylesheet', a=wp)
+    wp.head_html = "<link href='https://afeld.github.io/emoji-css/emoji.css' rel='stylesheet'></link>"
     root = jp.Div(a=wp)
     body = jp.Div(
         classes='bg-gray-400 font-sans leading-normal tracking-normal', a=root)
@@ -42,12 +41,11 @@ def page():
                        a=cont_left, text='Spam Detector')
     description = jp.P(classes='leading-normal mb-4', a=cont_left,
                        text='Keep the bad guys out! Enter the text of your email below and the Spam Detector will tell you how likely it\'s contents is spam:')
-    text_in = jp.Div(classes='w-full border-2 h-32', html_tag='textarea',
-                     placeholder='Please type here', a=cont_left)
-    button = jp.Button(classes='my-4 bg-transparent hover:bg-gray-900 text-gray-900 hover:text-white rounded shadow hover:shadow-lg py-2 px-4 border border-gray-900 hover:border-transparent',
-                       a=cont_left, click=predict, text='See Your Results')
-    button.on('click', predict)
-    test_spot = jp.P(classes='uppercase', a=cont_left)
+    text_in = jp.Textarea(classes='w-full border-2 h-32',
+                          placeholder='Please type here', a=cont_left)
+    text_in.button = jp.Button(classes='my-4 bg-transparent hover:bg-gray-900 text-gray-900 hover:text-white rounded shadow hover:shadow-lg py-2 px-4 border border-gray-900 hover:border-transparent',
+                               a=cont_left, text='See Your Results')
+    text_in.div = jp.Div(text='Results: ', a=cont_left)
     cont_right = jp.Div(
         classes='w-full lg:w-1/2 lg:py-6 text-center', a=cont_main)
     mailbox = jp.I(
