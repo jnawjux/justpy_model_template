@@ -9,11 +9,15 @@ import pickle
 with open('spam_model.pkl', 'rb') as f:
     model = pickle.load(f)
 
-template = "THHIIIE"
-
 
 async def predict(self, msg):
-    self.div.text = self.value
+    score = model.predict_proba([self.value])[0][1]
+    if score < .50:
+        self.div.classes = "uppercase text-green-400 p-5 text-xl text-extrabold"
+        self.div.text = f"Probably not spam ({round(score * 100)}% Likely)"
+    elif score > .50:
+        self.div.classes = "uppercase text-red-700 p-5 text-xl text-extrabold"
+        self.div.text = f"Potential spam ({round(score * 100) }% Likely)"
 
 
 async def page():
@@ -23,7 +27,8 @@ async def page():
     body = jp.Div(
         classes='bg-gray-400 font-sans leading-normal tracking-normal', a=root)
     c2 = jp.Nav(classes='bg-gray-800 p-2 mt-0 w-full', a=body)
-    c3 = jp.Div(classes='container mx-auto flex flex-wrap items-center', a=c2)
+    c3 = jp.Div(
+        classes='container mx-auto flex flex-wrap items-center', a=c2)
     c4 = jp.Div(
         classes='flex w-full md:w-1/2 justify-center md:justify-start text-white font-extrabold', a=c3)
     logo_link = jp.A(
@@ -43,9 +48,8 @@ async def page():
                        text='Keep the bad guys out! Enter the text of your email below and the Spam Detector will tell you how likely it\'s contents is spam:')
     text_in = jp.Textarea(classes='w-full border-2 h-32',
                           placeholder='Please type here', a=cont_left)
-    text_in.button = jp.Button(classes='my-4 bg-transparent hover:bg-gray-900 text-gray-900 hover:text-white rounded shadow hover:shadow-lg py-2 px-4 border border-gray-900 hover:border-transparent',
-                               a=cont_left, text='See Your Results')
-    text_in.div = jp.Div(text='Results: ', a=cont_left)
+    text_in.div = jp.Div(a=cont_left)
+    text_in.on('input', predict)
     cont_right = jp.Div(
         classes='w-full lg:w-1/2 lg:py-6 text-center', a=cont_main)
     mailbox = jp.I(
@@ -59,13 +63,6 @@ async def page():
     science = jp.I(classes='em em-test_tube', a=footer_text_cont)
 
     return wp
-
-
-"""@app.route('/predict', methods=['GET', 'POST'])
-def predict():
-    data = request.json
-    prediction = model.predict_proba([data['user_input']])
-    return jsonify({'probability': prediction[0][1]})"""
 
 
 jp.justpy(page)
